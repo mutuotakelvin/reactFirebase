@@ -1,15 +1,13 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
-import { FirebaseContext } from "../Firebase";
+import { withFirebase } from "../Firebase";
 import * as ROUTES from "../../constrains/routes";
 
 const SignUpPage = () => (
   <div>
     <h1>SignUp</h1>
-    <FirebaseContext.Consumer>
-      {(firebase) => <SignUpForm firebase={firebase} />}
-    </FirebaseContext.Consumer>
+    <SignUpForm />
   </div>
 );
 
@@ -21,7 +19,7 @@ const INITIAL_STATE = {
   error: null,
 };
 
-class SignUpForm extends Component {
+class SignUpFormBase extends Component {
   constructor(props) {
     super(props);
 
@@ -35,6 +33,7 @@ class SignUpForm extends Component {
       .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then((authUser) => {
         this.setState({ ...INITIAL_STATE });
+        this.props.history.push(ROUTES.HOME);
       })
       .catch((error) => {
         this.setState({ error });
@@ -99,6 +98,8 @@ const SignUpLink = () => (
     Dont't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
   </p>
 );
+
+const SignUpForm = withFirebase(SignUpFormBase);
 
 export default SignUpPage;
 
