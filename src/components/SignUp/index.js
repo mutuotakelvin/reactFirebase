@@ -1,7 +1,17 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
+import { FirebaseContext } from "../Firebase";
 import * as ROUTES from "../../constrains/routes";
+
+const SignUpPage = () => (
+  <div>
+    <h1>SignUp</h1>
+    <FirebaseContext.Consumer>
+      {(firebase) => <SignUpForm firebase={firebase} />}
+    </FirebaseContext.Consumer>
+  </div>
+);
 
 const INITIAL_STATE = {
   username: "",
@@ -11,13 +21,6 @@ const INITIAL_STATE = {
   error: null,
 };
 
-const SignUpPage = () => (
-  <div>
-    <h1>SignUp</h1>
-    <SignUpForm />
-  </div>
-);
-
 class SignUpForm extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +28,19 @@ class SignUpForm extends Component {
     this.state = { ...INITIAL_STATE };
   }
 
-  onSubmit = (event) => {};
+  onSubmit = (event) => {
+    const { username, email, passwordOne } = this.state;
+
+    this.props.firebase
+      .doCreateUserWithEmailAndPassword(email, passwordOne)
+      .then((authUser) => {
+        this.setState({ ...INITIAL_STATE });
+      })
+      .catch((error) => {
+        this.setState({ error });
+      });
+    event.preventDefault();
+  };
 
   onChange = (event) => {
     this.setState({ [event.target.name]: event.target.value });
@@ -33,6 +48,12 @@ class SignUpForm extends Component {
 
   render() {
     const { username, email, passwordOne, passwordTwo, error } = this.state;
+    const isInvalid =
+      passwordOne !== passwordTwo ||
+      passwordOne === "" ||
+      email === "" ||
+      username === "";
+
     return (
       <form onSubmit={this.onSubmit}>
         <input
@@ -63,7 +84,9 @@ class SignUpForm extends Component {
           type='password'
           placeholder='Confirm Password'
         />
-        <button type='submit'>Sign Up</button>
+        <button disabled={isInvalid} type='submit'>
+          Sign Up
+        </button>
 
         {error && <p>{error.message}</p>}
       </form>
