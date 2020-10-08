@@ -4,6 +4,14 @@ import { Link } from "react-router-dom";
 import { withFirebase } from "../Firebase";
 import * as ROUTES from "../../constrains/routes";
 
+import styled from "styled-components";
+
+const Form = styled.form`
+  margin: 1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
+`;
+
 const PasswordForgetPage = () => (
   <div>
     <h1>PasswordForget</h1>
@@ -45,7 +53,7 @@ class PasswordForgetFormBase extends Component {
 
     const isInvalid = email === "";
     return (
-      <form onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit}>
         <input
           name='email'
           value={this.state.email}
@@ -58,7 +66,7 @@ class PasswordForgetFormBase extends Component {
         </button>
 
         {error && <p>{error.message}</p>}
-      </form>
+      </Form>
     );
   }
 }
